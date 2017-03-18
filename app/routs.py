@@ -4,7 +4,6 @@ from flask import redirect, jsonify
 from flask import request
 
 from app import app
-from app import models
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -17,8 +16,6 @@ def upload_file():
             return redirect(request.url)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
-        image = models.Image(filepath)
-        return jsonify(image.result())
 
     return '''
     <!doctype html>
