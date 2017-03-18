@@ -12,6 +12,9 @@ import urllib2
 import urllib
 import xml.dom.minidom
 
+from json import dumps
+from xmljson import gdata as bf
+from xml.etree.ElementTree import fromstring
 
 class Task:
     Status = "Unknown"
@@ -52,18 +55,6 @@ class AbbyyOnlineSdk:
         task = self.DecodeResponse(response)
         return task
 
-    def ProcessImage(self, filePath, settings):
-        urlParams = urllib.urlencode(settings)
-        requestUrl = self.serverUrl + "processImage?" + urlParams
-
-        bodyParams = {"file": open(filePath, "rb")}
-        request = urllib2.Request(requestUrl, None, self.buildAuthInfo())
-        response = self.getOpener().open(request, bodyParams).read()
-        if response.find('<Error>') != -1:
-            return None
-        task = self.DecodeResponse(response)
-        return task
-
     def GetTaskStatus(self, task):
         if task.Id.find('00000000-0') != -1:
             print "Null task id passed"
@@ -78,13 +69,15 @@ class AbbyyOnlineSdk:
 
     def DownloadResult(self, task, outputPath):
         getResultUrl = task.DownloadUrl
-        if getResultUrl == None:
+        if getResultUrl is None:
             print "No download URL found"
             return
         request = urllib2.Request(getResultUrl)
         fileResponse = self.getOpener().open(request).read()
         resultFile = open(outputPath, "wb")
         resultFile.write(fileResponse)
+        return dumps(bf.data(fromstring(fileResponse)))
+        return fileResponse
 
     def DecodeResponse(self, xmlResponse):
         dom = xml.dom.minidom.parseString(xmlResponse)
