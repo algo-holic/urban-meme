@@ -16,6 +16,7 @@ from json import dumps
 from xmljson import gdata as bf
 from xml.etree.ElementTree import fromstring
 
+
 class Task:
     Status = "Unknown"
     Id = None
@@ -76,7 +77,11 @@ class AbbyyOnlineSdk:
         fileResponse = self.getOpener().open(request).read()
         resultFile = open(outputPath, "wb")
         resultFile.write(fileResponse)
-        return dumps(bf.data(fromstring(fileResponse)))
+        # return dumps(bf.data(fromstring(fileResponse)))
+        # print fileResponse
+        print convert(fileResponse)
+        return convert(fileResponse)
+
         return fileResponse
 
     def DecodeResponse(self, xmlResponse):
@@ -102,3 +107,13 @@ class AbbyyOnlineSdk:
                 MultipartPostHandler.MultipartPostHandler,
                 urllib2.HTTPHandler(debuglevel=self.debuglevel))
         return self.opener
+
+
+import xmltodict
+
+
+def convert(xml_file, xml_attribs=True):
+    d = xmltodict.parse(xml_file, xml_attribs=xml_attribs)
+    item = d['receipts']['receipt']['recognizedItems']['item']
+    l = [(x['name']['text'], x['total']['normalizedValue']) for x in item]
+    return list(l)

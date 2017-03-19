@@ -1,2 +1,3 @@
+xmltodict
 Flask==0.11.1
 xmljson==0.1.7

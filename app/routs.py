@@ -39,12 +39,11 @@ def upload_file():
             if task.Status == "Completed":
                 if task.DownloadUrl is not None:
                     print 'SUCCESS'
-                    return abbyycli.DownloadResult(task, 'result')
+                    return jsonify(abbyycli.DownloadResult(task, 'result'))
                 print "Result was written to %s" % 'result'
         else:
             print "Error processing task"
             return redirect(request.url)
-
     return '''
     <!doctype html>
     <title>Upload new File</title>
